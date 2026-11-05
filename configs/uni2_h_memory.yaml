@@ -1,0 +1,67 @@
+encoder:
+  name: uni2_h
+  weights: /home/yangorange/.cache/huggingface/hub/models--MahmoodLab--UNI2-h/blobs/6e077eda234bebc595868d918d3458d9dd32a050199b0ff04443b2f46a0a3b1e
+  config: null
+  device: cuda
+  batch_size: 1
+  precision: float32
+  token_precision: float16
+  normalize: true
+window:
+  size: 448
+  stride: 224
+  offsets:
+  - 0
+  - 8
+  support_offsets:
+  - 0
+  - 8
+  padding_mode: reflect
+  interpolation: bilinear
+memory:
+  class_ids:
+  - 0
+  - 1
+  occupancy_thresholds:
+    0: 0.9
+    1: 0.9
+  cap_per_image_per_class: 512
+  sampling_seed: 2026
+  normalize: true
+  fallback_strategy: none
+  file: ../outputs/uni2_h/memory.npz
+retrieval:
+  top_k: 50
+  metric: cosine
+  aggregation: mean
+  chunk_size: 784
+segmentation:
+  output_size:
+  - 256
+  - 256
+  native_resolution: false
+  threshold: 0.0
+  margin_precision: float16
+  interpolation: bilinear
+  overlap_fusion: mean
+  offset_fusion: mean
+dataset:
+  name: generic
+  root: null
+  support_manifest: null
+  query_manifest: null
+  mask_encoding: indexed
+  class_mapping:
+    0: 0
+    255: 1
+evaluation:
+  object_metrics: false
+  object_min_area: 50
+  object_match_overlap: 0.5
+output:
+  directory: ../outputs/uni2_h
+  save_mask: true
+  save_margin: false
+  save_visualization: false
+  save_metrics: true
+  cache_features: false

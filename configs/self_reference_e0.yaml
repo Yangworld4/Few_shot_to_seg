@@ -1,0 +1,81 @@
+seed: 2026
+features:
+  # Same fixed HED mixing matrix as installed skimage.color.colorconv.rgb_from_hed.
+  stain_matrix: [[0.65, 0.70, 0.29], [0.07, 0.99, 0.11], [0.27, 0.57, 0.78]]
+  od_epsilon: 0.000001
+  stain_quantiles: [2, 98]
+  texture_size: 9
+  tissue_od_min: 0.15
+  tissue_gray_min: 0.04
+  tissue_gray_max: 0.90
+  tissue_saturation_min: 0.05
+superpixels:
+  target_area: 1024
+  minimum: 16
+  maximum: 2500
+  compactness: 10.0
+  sigma: 1.0
+  max_num_iter: 10
+  clusters: 5
+  kmeans_n_init: 10
+  # Region features Lab,H,E,gray,texture,log(area),y,x.
+  feature_weights: [1, 1, 1, 1, 1, 1, 1, 0.15, 0.1, 0.1]
+morphology:
+  dense_h_quantile: 60
+  dense_gray_quantile: 60
+  dense_texture_quantile: 35
+  closing_radius: 5
+  erosion_a: 2
+  hole_min_area: 64
+  hole_max_image_fraction: 0.08
+  proposal_min_area: 256
+  proposal_max_image_fraction: 0.25
+  proposal_hole_fraction_min: 0.03
+  enclosure_min: 0.45
+  wall_interior_h_difference_min: 0.08
+  hole_aspect_max: 4.0
+  epithelial_radius: 12
+  interior_erosion: 2
+  interior_texture_quantile: 65
+  interior_h_quantile: 70
+  bg_gray_quantile: 55
+  rim_radius: 2
+  branch_erosion: 1
+  lumen_gray_min: 0.85
+  lumen_saturation_max: 0.15
+  bg_e_quantile: 60
+  bg_h_quantile_a: 35
+  bg_h_quantile_b: 25
+  bg_texture_quantile_a: 55
+  bg_texture_quantile_b: 40
+  bg_e_h_ratio_min: 1.25
+  bg_neighbor_fraction_min: 0.60
+  bg_exclusion_radius: 8
+stability:
+  views: [hflip, vflip, rot90, brightness]
+  brightness_gain: 1.03
+  channel_gains: [1.01, 0.99, 1.0]
+  require_all: true
+window: {size: 448, stride: 224, offsets: [0, 8], patch_size: 16, padding_mode: reflect}
+memory: {purity: 0.9, cap_per_class: 512, sampling_seed: 2026}
+retrieval: {top_k: 50, chunk_size: 784, exclusion_radius: 32.0, metric: cosine, aggregation: mean}
+encoder:
+  weights_sha256: 56ef09b44a25dc5c7eedc55551b3d47bcd17659a7a33837cf9abc9ec4e2ffb40
+  precision: float32
+  token_precision: float16
+  feature_dim: 1024
+  normalize: true
+evaluation:
+  output_size: [256, 256]
+  object_min_area_256: 50
+  # Native minimum scales by H*W/(256*256), not a native fixed 50 px.
+  object_size_bins_256: [200, 1000]
+  object_match_overlap: 0.5
+  recovery_overlap: 0.5
+  # GT-assisted lumen diagnostic only, never consulted during generation.
+  gt_encoding: {0: 0, 255: 1}
+datasets:
+  GlaS: {manifest: datasets/GlaS/manifests/paper_seed_2026/test.csv}
+  CRAG: {manifest: datasets/CRAG/manifests/paper_seed_2026/test.csv}
+cache_root: outputs/support_size_study/cache/query_features
+output_root: outputs/self_reference_seed_diagnosis

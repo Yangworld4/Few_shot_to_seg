@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pathology-trainfree"
+version = "0.1.0"
+requires-python = ">=3.9"
+dependencies = ["torch", "timm", "numpy", "Pillow", "PyYAML", "scipy", "opencv-python-headless"]
+
+[project.optional-dependencies]
+research = ["pandas", "matplotlib", "pytest"]
+self-reference = ["scikit-image", "scikit-learn", "pandas", "matplotlib", "pytest"]
+
+[project.scripts]
+pathology-trainfree = "pathology_trainfree.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.setuptools.packages.find]
+include = ["pathology_trainfree*"]
