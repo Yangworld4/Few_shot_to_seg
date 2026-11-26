@@ -1,0 +1,2 @@
+# Runtime dependencies and package metadata are defined in pyproject.toml.
+-e .

@@ -1,5 +1,23 @@
+# Python cache
 __pycache__/
 .pytest_cache/
 *.pyc
-outputs/
-datasets/
+*.egg-info/
+
+# Build
+/build/
+/dist/
+/.venv/
+
+# Model checkpoints
+/checkpoints/
+
+# Experimental outputs
+/outputs/
+/analysis/
+
+# External repositories
+/segment-anything/
+
+# Datasets
+/datasets/

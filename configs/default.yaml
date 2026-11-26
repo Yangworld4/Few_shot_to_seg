@@ -1,0 +1,35 @@
+encoder:
+  weights: ../checkpoints/uni/pytorch_model.bin
+
+one_shot:
+  dataset: [GlaS, CRAG]
+  data_root: ../datasets
+  split: test
+  feature_source: images
+  feature_cache: ../outputs/uni_layernorm_depth_diag/raw_features
+  layer: 19
+  device: cuda
+  bank_select: kcenter
+  budget_mode: ratio
+  rho: 0.125
+  support_topk: 5
+  refine_query: true
+  seed_ratio: 0.3
+  selfref_topk: 50
+  threshold: 0.0
+  output_dir: ../outputs/selfref
+  tag: query_refinement
+  save_masks: false
+
+sam:
+  enabled: false
+  model_type: vit_l
+  checkpoint: ../segment-anything/checkpoints/sam_vit_l_0b3195.pth
+  base_branch: auto
+  iou_threshold: 0.5
+  opening_radius: 1
+  negative_points: 3
+  negative_radius: 64
+  negative_spacing: 12
+  max_hole_area: 256
+  min_area: 32
