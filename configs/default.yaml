@@ -1,35 +1,91 @@
+runtime:
+  protocol: direct
+  run_inference: false
 encoder:
-  weights: ../checkpoints/uni/pytorch_model.bin
+  name: uni
+  weights: /data/mission/models/Exp/PathologyTrainFree/checkpoints/uni/pytorch_model.bin   # Set the path to your local checkpoint.
+  config: null
+  device: cuda
+  batch_size: 1
+  precision: float32
+  token_precision: float16
+  normalize: true
+window:
+  size: 448
+  stride: 224
+  offsets: [0, 8]
+  support_offsets: [0, 8]
+  padding_mode: reflect
+  interpolation: bilinear
+memory:
+  class_ids: [0, 1]
+  occupancy_thresholds: {0: 0.9, 1: 0.9}
+  cap_per_image_per_class: 512
+  sampling_seed: 2026
+  normalize: true
+  fallback_strategy: nearest_10_percent
+  file: ../outputs/default/memory.npz
+retrieval:
+  top_k: 5
+  metric: cosine
+  aggregation: mean
+  chunk_size: 784
+segmentation:
+  output_size: [256, 256]
+  native_resolution: false
+  threshold: 0.0
+  margin_precision: float16
+  interpolation: bilinear
+  overlap_fusion: mean
+  offset_fusion: mean
+dataset:
+  name: generic
+  root: null
+  support_manifest: null
+  query_manifest: null
+  mask_encoding: indexed
+  class_mapping: {0: 0, 255: 1}
+evaluation:
+  object_metrics: false
+  object_min_area: 50
+  object_match_overlap: 0.5
+output:
+  directory: ../outputs/default
+  save_mask: true
+  save_margin: false
+  save_visualization: false
+  save_metrics: true
+  cache_features: false
 
+# Settings for evaluation from cached UNI features.
 one_shot:
   dataset: [GlaS, CRAG]
-  data_root: ../datasets
   split: test
-  feature_source: images
   feature_cache: ../outputs/uni_layernorm_depth_diag/raw_features
-  layer: 19
-  device: cuda
+  layer: F19
   bank_select: kcenter
   budget_mode: ratio
   rho: 0.125
-  support_topk: 5
+  support_topk: 1
+
+  # Query refinement settings
   refine_query: true
   seed_ratio: 0.3
   selfref_topk: 50
   threshold: 0.0
-  output_dir: ../outputs/selfref
   tag: query_refinement
-  save_masks: false
 
-sam:
-  enabled: false
-  model_type: vit_l
-  checkpoint: ../segment-anything/checkpoints/sam_vit_l_0b3195.pth
-  base_branch: auto
-  iou_threshold: 0.5
-  opening_radius: 1
-  negative_points: 3
-  negative_radius: 64
-  negative_spacing: 12
-  max_hole_area: 256
-  min_area: 32
+
+
+# one_shot:
+#   # Coreset
+#   bank_select: kcenter   # kcenter 代表性选点，random 随机选点，all 保留全部候选
+#   budget_mode: ratio    # ratio 按比例，fixed 按每类固定上限
+#   rho: 0.125            # ratio 模式的采样比例
+#   # budget_cap: 2048    # fixed 模式的每类上限
+#   support_topk: 5       # 每个 Query token 从 Support 库的每类取几个近邻
+
+#   # Query 自参考
+#   refine_query: true    # false 时只跑 Support 检索
+#   seed_ratio: 0.3       # 在前景和背景候选中分别取置信度最高的 30% 作为种子
+#   selfref_topk: 50      # 每个 Query token 从每类种子中取几个近
